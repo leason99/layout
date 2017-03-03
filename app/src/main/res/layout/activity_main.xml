@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main"
+    tools:context="leason.wayout.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:baselineAligned="false"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/synch"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="170dp"
+            android:background="@drawable/synch" />
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/set_pwd"
+            android:layout_below="@+id/synch"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bag_frame_status"
+                    android:onClick="bagDeatil"
+                    android:id="@+id/bag1_btn">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:orientation="horizontal"
+
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:id="@+id/itemlayout1"
+                        android:elevation="19dp"
+                        android:layout_height="30dp">
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/warter"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/food"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/battery"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/bag"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+                    </LinearLayout>
+
+                    <leason.wayout.MyTextView
+                        android:text="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView1"
+                        android:textAlignment="center"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@drawable/line"
+                        android:layout_height="1dp"
+                        android:id="@+id/bag1_linetop"
+                        android:layout_below="@id/textView1"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
+
+                    <leason.wayout.MyTextView
+                        android:text="行動電源狀態"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView2"
+                        android:layout_below="@+id/bag1_linetop"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp" />
+
+                    <ImageView
+                        android:id="@+id/charge1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="false"
+                        android:layout_above="@id/itemlayout1"
+                        android:layout_below="@id/textView2"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_weight="1"
+                        android:src="@drawable/charge"
+                        android:adjustViewBounds="true"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:layout_marginBottom="3dp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@drawable/line"
+                        android:id="@+id/bag1_lineend"
+                        android:layout_above="@id/itemlayout1"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginLeft="15dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bag_frame_status"
+                    android:onClick="bagDeatil"
+                    android:id="@+id/bag2_btn">
+
+
+
+                    <leason.wayout.MyTextView
+                        android:text="2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView3"
+                        android:textAlignment="center"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@drawable/line"
+                        android:layout_height="1dp"
+                        android:id="@+id/bag2_linetop"
+                        android:layout_below="@id/textView3"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
+
+                    <leason.wayout.MyTextView
+                        android:text="行動電源狀態"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView4"
+                        android:layout_below="@id/bag2_linetop"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:orientation="horizontal"
+
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:id="@+id/itemlayout2"
+                        android:elevation="19dp"
+                        android:layout_height="30dp">
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/warter"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/food"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/battery"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/bag"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                    </LinearLayout>
+
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@drawable/line"
+                        android:id="@+id/bag2_lineend"
+                        android:layout_above="@id/itemlayout2"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginLeft="15dp" />
+
+                    <ImageView
+                        android:id="@+id/charge2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="false"
+
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_weight="1"
+                        android:src="@drawable/charge"
+                        android:adjustViewBounds="true"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+
+                        android:layout_below="@id/textView4"
+                        android:layout_above="@id/itemlayout2"
+                        android:layout_marginBottom="3dp" />
+
+
+                </RelativeLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bag_frame_status"
+                    android:onClick="bagDeatil"
+                    android:id="@+id/bag3_btn">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:orientation="horizontal"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:id="@+id/itemlayout3"
+                        android:elevation="19dp"
+                        android:layout_height="30dp">
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/warter"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/food"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/battery"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/bag"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+                    </LinearLayout>
+
+                    <leason.wayout.MyTextView
+                        android:text="3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView5"
+                        android:textAlignment="center"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@drawable/line"
+                        android:layout_height="1dp"
+                        android:id="@+id/bag3_linetop"
+                        android:layout_below="@id/textView5"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
+
+                    <leason.wayout.MyTextView
+                        android:text="行動電源狀態"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView6"
+                        android:layout_below="@+id/bag3_linetop"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp" />
+
+                    <ImageView
+                        android:id="@+id/charge3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="false"
+
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_weight="1"
+                        android:src="@drawable/charge"
+                        android:adjustViewBounds="true"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:layout_above="@id/itemlayout3"
+                        android:layout_below="@id/textView6"
+                        android:layout_marginBottom="3dp" />
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@drawable/line"
+                        android:id="@+id/bag3_lineend"
+                        android:layout_above="@id/itemlayout3"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginLeft="15dp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bag_frame_status"
+                    android:onClick="bagDeatil"
+                    android:id="@+id/bag4_btn">
+
+
+
+                    <leason.wayout.MyTextView
+                        android:text="4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView7"
+                        android:textAlignment="center"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"/>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@drawable/line"
+                        android:layout_height="1dp"
+                        android:id="@+id/bag4_linetop"
+                        android:layout_below="@id/textView7"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp" />
+
+                    <leason.wayout.MyTextView
+                        android:text="行動電源狀態"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/textView8"
+                        android:layout_below="@+id/bag4_linetop"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_alignParentBottom="true"
+                        android:orientation="horizontal"
+
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:id="@+id/itemlayout4"
+                        android:elevation="19dp"
+                        android:layout_height="30dp">
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/warter"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/food"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+
+                            android:src="@drawable/battery"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+
+                        <ImageView
+                            android:layout_weight="1"
+                            android:src="@drawable/bag"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:layout_height="30dp"
+                            android:layout_width="30dp" />
+                    </LinearLayout>
+
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@drawable/line"
+                        android:id="@+id/bag4_lineend"
+                        android:layout_above="@id/itemlayout4"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginLeft="15dp" />
+
+                    <ImageView
+                        android:id="@+id/charge4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="false"
+                        android:layout_above="@id/itemlayout4"
+                        android:layout_below="@id/textView8"
+                        android:layout_centerHorizontal="false"
+                        android:layout_centerInParent="true"
+                        android:layout_weight="1"
+                        android:src="@drawable/charge"
+                        android:adjustViewBounds="true"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:layout_marginBottom="3dp" />
+
+
+                </RelativeLayout>
+
+            </TableRow>
+
+
+
+        </TableLayout>
+
+        <ImageButton
+            android:id="@+id/set_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/cg_pass"
+            android:onClick="changePassword" />
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

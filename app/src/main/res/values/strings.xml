@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wayout</string>
+    <string-array name="password_mode">
+        <item>設定密碼</item>
+        <item>確認密碼</item>
+        <item>輸入密碼</item>
+        <item>輸入新密碼</item>
+        <item>確認新密碼</item>
+    </string-array>
+
+    <string-array name="dialog_item_string">
+        <item name="food">食物 保存日期</item>
+        <item name="water"> 水 保存日期</item>
+        <item name="bag">急救包 保存日期</item>
+        <item name="battery"> 電池 保存日期</item>
+
+    </string-array>
+</resources>
