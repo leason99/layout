@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.nio.InvalidMarkException;
 
 public class PasswordActivity extends AppCompatActivity implements View.OnClickListener {
@@ -132,13 +134,16 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 case CHECK_PASSWORD:
 
                     if (checkedPassword.equals(password.toString())) {
-                        intent.setClass(PasswordActivity.this, MainActivity.class);
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(PasswordActivity.this).toBundle());
-                        getSharedPreferences("set", 0)
-                                .edit()
-                                .putBoolean("isFinished", true)
-                                .commit();
-                        finish();
+
+
+                        try {
+                           Message msg= new Message();
+                            msg.what=2;
+                            MainService.mainService.sendData("setpwd:"+checkedPassword,msg);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(this,"藍牙設定密碼傳送錯誤",Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         intent.setClass(PasswordActivity.this, PasswordActivity.class);
                         intent.setAction("setpwd");

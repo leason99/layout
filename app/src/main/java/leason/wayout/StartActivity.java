@@ -20,15 +20,20 @@ public class StartActivity extends AppCompatActivity {
         intent = new Intent();
 
         if(!getSharedPreferences("set",0).getBoolean("isFinished",false)){
-            intent.setClass(StartActivity.this, PasswordActivity.class);
-            intent.setAction("setpwd");
+           // intent.setClass(StartActivity.this, PasswordActivity.class);
+            //intent.setAction("setpwd");
+             intent.setClass(StartActivity.this, ConnectActivity.class);
+
         }
         else{
             intent.setClass(StartActivity.this, MainActivity.class);
 
         }
 
-
+        Intent ServiceIntent=new Intent();
+        ServiceIntent.setClass(this,MainService.class);
+        startService(ServiceIntent);
+        while(MainService.isInstance());
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -37,7 +42,7 @@ public class StartActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 5000);
+        }, 3000);
 
 
     }

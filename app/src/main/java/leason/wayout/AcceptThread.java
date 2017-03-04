@@ -1,8 +1,10 @@
 package leason.wayout;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -18,10 +20,13 @@ import java.util.UUID;
 
     private final BluetoothAdapter mmAdapter;
     InputStream inputStream;
-    public AcceptThread(BluetoothAdapter adapter) {
+    Activity activity;
+    public AcceptThread(BluetoothAdapter adapter,Activity activity ) {
         // Use a temporary object that is later assigned to mmServerSocket,
         // because mmServerSocket is final
         BluetoothServerSocket tmp = null;
+
+        this.activity=activity;
       mmAdapter=adapter;
         try {
             // MY_UUID is the app's UUID string, also used by the client code
@@ -42,25 +47,19 @@ import java.util.UUID;
             } catch (IOException e) {
                 break;
             }
-            // If a connection was accepted
-            final ManageConnectThread manageConnectThread=new ManageConnectThread();
-            manageConnectThread.run();
 
 
             final BluetoothSocket finalSocket = socket;
-            blueToothActivity.instance.runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    int tmp=0;
+                    byte[][] tmp=null;
                     try {
-                     tmp =  manageConnectThread.receiveData(finalSocket);
+                     tmp =  ManageConnectThread.receiveData(finalSocket);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Toast.makeText(blueToothActivity.instance,"connect  :"+ String.valueOf(tmp),Toast.LENGTH_SHORT).show();
-
-
-
+                    Toast.makeText(activity,"connect  :"+ String.valueOf(tmp[0]),Toast.LENGTH_SHORT).show();
                 }
             });
 

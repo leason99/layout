@@ -3,6 +3,7 @@ package leason.wayout;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Message;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -15,17 +16,9 @@ class ConnectThread extends Thread {
     private final BluetoothSocket mmSocket;
     private final BluetoothAdapter mmAdapter;
 
-    public ConnectThread(BluetoothDevice device, BluetoothAdapter adapter) {
-        BluetoothSocket tmp = null;
-
+    public ConnectThread(BluetoothSocket socket, BluetoothAdapter adapter) {
         mmAdapter = adapter;
-        try {
-            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-        } catch (IOException e) {
-        }
-
-        mmSocket = tmp;
-
+        mmSocket = socket;
     }
 
     public void run() {
@@ -33,12 +26,11 @@ class ConnectThread extends Thread {
         mmAdapter.cancelDiscovery();
         try {
             mmSocket.connect();
-
-            ManageConnectThread manageConnectThread = new ManageConnectThread();
-
-            manageConnectThread.run();
-            manageConnectThread.sendData(mmSocket, 97);
-
+           // ManageConnectThread manageConnectThread = new ManageConnectThread();
+          //  ManageConnectThread.sendData(mmSocket, 97);
+            Message msg=new Message();
+            msg.what=1;
+            MainService.mainService.handler.sendMessage(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
