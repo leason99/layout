@@ -20,21 +20,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static leason.wayout.MainService.BA;
+
 
 public class ConnectActivity extends AppCompatActivity {
     static ConnectActivity connectActivity;
-   static Handler handler;
+    static Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
-        MainService.mainService.Bluetoothconnect();
-        connectActivity=this;
+        if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+            // 發出一個intent去開啟藍芽，
+            Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(mIntentOpenBT, 1);
+
+        } else {
+            MainService.mainService.Bluetoothconnect();
+        }
+        connectActivity = this;
 
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+
+        if (resultCode == 1) {
+            if (!BA.isEnabled()) {
+//
+//待寫dialog 警告
+              Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(mIntentOpenBT, 1);
+            } else {
+
+                MainService.mainService.Bluetoothconnect();
+            }
+        }
+
+    }
 
 }

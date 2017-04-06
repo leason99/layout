@@ -13,7 +13,12 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static leason.wayout.BagItem.*;
 import static leason.wayout.BagItem.Type.*;
@@ -31,7 +36,7 @@ public class MyDialog extends Dialog {
        Context context;
     Date nowDate, selectedDate;
     BagItem bagItem;
-    ImageButton certainButton;
+    ImageButton certainButton ,cancleButton;
     public MyDialog(Context mcontext, BagItem mbagItem) {
         super(mcontext);
         this.bagItem = mbagItem;
@@ -40,14 +45,14 @@ public class MyDialog extends Dialog {
         setContentView(R.layout.mydatepick);
         View v = getWindow().getDecorView();
         certainButton= (ImageButton) findViewById(R.id.certain);
+        cancleButton= (ImageButton) findViewById(R.id.cancleButton);
         certainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 String dateString = sdf.format(selectedDate);
-
                 context.getSharedPreferences(String.valueOf(bagItem.getNum()), Context.MODE_PRIVATE).edit()
-                        .putString(bagItem.getType().toString(), dateString)
+                        .putString("date"+bagItem.getType().toString(),dateString)
                         .commit();
 
 
@@ -69,6 +74,14 @@ public class MyDialog extends Dialog {
                 }
                 view.setText(dateString);
                 MyDialog.this.dismiss();
+
+
+            }
+        });
+        cancleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyDialog.this.dismiss();
             }
         });
         v.setBackgroundResource(android.R.color.transparent);
@@ -88,7 +101,7 @@ public class MyDialog extends Dialog {
 
                 selectedDate.setDate(dayOfMonth);
                 selectedDate.setMonth(monthOfYear);
-                selectedDate.setYear(year);
+                selectedDate.setYear(year-1900);
                 Calendar calendarselect = Calendar.getInstance();
                 calendarselect.set(year, monthOfYear, dayOfMonth);
                 long difference = calendarselect.getTimeInMillis() - calendar.getTimeInMillis();

@@ -1,56 +1,107 @@
 package leason.wayout;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.zip.Inflater;
 
 public class DetailActivity extends AppCompatActivity {
     String Num;
     MyTextView textView;
-
+    int itemId[] = {R.id.food, R.id.water, R.id.battery, R.id.bag};
+    int itemPicId[] = {R.drawable.food_item, R.drawable.water_item, R.drawable.battery_item, R.drawable.bag_item};
+    int itemPicIdPress[] = {R.drawable.food_item_press, R.drawable.water_item_press, R.drawable.battery_item_press, R.drawable.bag_item_press};
+    int itemPicIdOverdue[] = {R.drawable.food_item_overdue, R.drawable.water_item_overdue, R.drawable.battery_item_overdue, R.drawable.bag_item_overdue};
+    int itemPicIdOverduePress[] = {R.drawable.food_item_overdue_press, R.drawable.water_item_overdue_press, R.drawable.battery_item_overdue_press, R.drawable.bag_item_overdue_press};
     final int[] dateId = {R.id.food_date, R.id.water_date, R.id.battery_date, R.id.bag_date};
-
     final int[] Id = {R.id.food, R.id.water, R.id.battery, R.id.bag};
-    static  DetailActivity instanceDetailActivity;
+    static DetailActivity instanceDetailActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        instanceDetailActivity=this;
-        Num = getIntent().getAction();
+        instanceDetailActivity = this;
+        Num = String.valueOf(Integer.valueOf(getIntent().getAction()) - 1);
         textView = (MyTextView) findViewById(R.id.bag_num);
         textView.setText(Num);
 
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < itemId.length; i++) {
 
-            TextView view = (TextView) findViewById(dateId[i]);
+            TextView textView = (TextView) findViewById(dateId[i]);
             String dateText = this.getSharedPreferences(String.valueOf(Num), Context.MODE_PRIVATE)
-                    .getString(BagItem.Type.values()[i].toString(), "");
-            view.setText(dateText);
+                    .getString("date" + BagItem.Type.values()[i].toString(), "");
+            Boolean status = getSharedPreferences("icon" + String.valueOf(Num), Context.MODE_PRIVATE)
+                    .getBoolean(BagItem.Type.values()[i].toString(), false);
+            textView.setText(dateText);
+
+
+            View view = (RelativeLayout) findViewById(itemId[i]);
+
+            if (status) {
+                final int finalI = i;
+                view.setBackgroundResource(itemPicIdOverdue[finalI]);
+
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            v.setBackgroundResource(itemPicIdOverdue[finalI]);
+                        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            v.setBackgroundResource(itemPicIdOverduePress[finalI]);
+                        }
+                        return false;
+                    }
+                });
+            } else {
+
+                final int finalI = i;
+                view.setBackgroundResource(itemPicId[finalI]);
+
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            v.setBackgroundResource(itemPicId[finalI]);
+                        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            v.setBackgroundResource(itemPicIdPress[finalI]);
+                        }
+                        return false;
+                    }
+                });
+            }
+
+
+
+        /*
+        for (int i = 0; i < itemId.length; i++) {
+            RelativeLayout view= (RelativeLayout) findViewById(itemId[i]);
+            InputStream is = this.getResources().openRawResource(itemPicId[i]);
+            BitmapFactory.Options options=new BitmapFactory.Options();
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = 2; //width，hight設為原來的十分一
+            Bitmap btp =BitmapFactory.decodeStream(is,null,options);
+            view.setBackground( new BitmapDrawable(btp));
+
+        }*/
         }
-
     }
-
 
     public void setDate(View v) {
 
@@ -77,22 +128,22 @@ public class DetailActivity extends AppCompatActivity {
 
         MyDialog alertDialog = new MyDialog(this, bagItem);
         alertDialog.show();
-             /*  View datePicker= view.findViewById(R.id.datePicker);
-        View numberPicker = datePicker.findViewById(Resources.getSystem().getIdentifier("month", "id", "android"));
-        datePicker.
-        ImageButton imageButton = (ImageButton) numberPicker.findViewById(getResources().getIdentifier("android:id/increment",null,null));
-        imageButton.setBackgroundColor(Color.RED);
-
-        ImageButton imageButton = (ImageButton) numberPicker.findViewById(numberPicker.getResources().getIdentifier("increment", "id", "android"));
-        imageButton.setBackgroundColor(Color.RED);
-        imageButton = (ImageButton) numberPicker.findViewById( Resources.getSystem().getIdentifier("decrement", "id", "android"));
-        imageButton.setBackgroundColor(Color.RED);
-*/
 
 
     }
 
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
 
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            setResult(1);
+            finish();
+            return true;
+        } else {
 
+            return super.onKeyDown(keyCode, event);
+        }
+
+    }
 }

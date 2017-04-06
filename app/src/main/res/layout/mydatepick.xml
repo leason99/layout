@@ -40,7 +40,7 @@
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:id="@+id/imageButton2"
+            android:id="@+id/cancleButton"
             android:layout_weight="1"
             android:src="@drawable/cancle"
             android:background="#00000000"

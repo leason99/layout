@@ -13,36 +13,39 @@ import java.util.TimerTask;
 
 public class StartActivity extends AppCompatActivity {
     Intent intent;
+
+    Boolean TESTMODE=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
         intent = new Intent();
 
-        if(!getSharedPreferences("set",0).getBoolean("isFinished",false)){
+
+        if(!getSharedPreferences("set",0).getBoolean("isFinished",false)&TESTMODE){
+            intent.setClass(StartActivity.this, MainActivity.class);
+        }
+        else if(!getSharedPreferences("set",0).getBoolean("isFinished",false)&(!TESTMODE)){
            // intent.setClass(StartActivity.this, PasswordActivity.class);
             //intent.setAction("setpwd");
              intent.setClass(StartActivity.this, ConnectActivity.class);
-
         }
         else{
             intent.setClass(StartActivity.this, MainActivity.class);
-
         }
 
         Intent ServiceIntent=new Intent();
         ServiceIntent.setClass(this,MainService.class);
         startService(ServiceIntent);
-        while(MainService.isInstance());
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-
+                while(!MainService.isInstance());
                 startActivity(intent);
                 finish();
             }
-        }, 3000);
+        }, 1000);
 
 
     }

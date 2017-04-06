@@ -1,13 +1,20 @@
 package leason.wayout;
 
 import android.app.ActivityOptions;
+import android.app.Presentation;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Message;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Checkable;
@@ -16,6 +23,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.nio.InvalidMarkException;
+
+import static leason.wayout.MainService.BA;
+import static leason.wayout.MainService.BS;
+import static leason.wayout.MainService.mainService;
 
 public class PasswordActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -70,6 +81,28 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
         password = new StringBuilder();
 
 
+
+        if(BA==null){
+             mainService.Bluetoothconnect();
+        }
+
+            if (!BA.isEnabled()) {
+//
+//待寫dialog 警告
+                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(mIntentOpenBT, 2);
+            }
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -112,84 +145,180 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
             image.setImageResource(R.drawable.pass);
 
         } else if (v.getId() == R.id.pass_del && password.length() > 0) {
+            ImageView image = (ImageView) findViewById(passImage[password.length() - 1]);
             password.deleteCharAt(password.length() - 1);
 
-            ImageView image = (ImageView) findViewById(passImage[password.length() - 1]);
+
             image.setImageResource(R.drawable.no_pass);
         }
 
 
         if (password.length() == 6) {
 
-            Intent intent = new Intent();
+            final Intent intent = new Intent();
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("等待藍牙連接");
+            progressDialog.setTitle("等待藍牙連接");
 
-            switch (Mode) {
-                case SET_PASSWORD:
-                    intent.setClass(PasswordActivity.this, PasswordActivity.class);
-                    intent.putExtra("checkedPassword", password.toString());
-                    intent.setAction("check");
-                    startActivity(intent);
-                    finish();
-                    break;
-                case CHECK_PASSWORD:
+            progressDialog.setCancelable(false);
+            progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 
-                    if (checkedPassword.equals(password.toString())) {
+                    if(KeyEvent.KEYCODE_BACK== keyCode){
 
-
-                        try {
-                           Message msg= new Message();
-                            msg.what=2;
-                            MainService.mainService.sendData("setpwd:"+checkedPassword,msg);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Toast.makeText(this,"藍牙設定密碼傳送錯誤",Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        intent.setClass(PasswordActivity.this, PasswordActivity.class);
-                        intent.setAction("setpwd");
-                        Toast.makeText(PasswordActivity.this, password + "密碼錯誤" + checkedPassword, Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
+                        progressDialog.dismiss();
                         finish();
-                    }
-                    break;
 
-                case INPUT_PASSWORD:
+                    }
+
+                    return false;
+                }
+            });
+
+
+            new AsyncTask<Void, Void, Void>() {
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    progressDialog.show();
+                    if (BS == null ) {
+                        MainService.mainService.Bluetoothconnect();
+
+                    }
+                    else if( !BS.isConnected()){
+                        MainService.mainService.Bluetoothconnect();
+
+                    }
+                }
+
+                @Override
+                protected Void doInBackground(Void... params) {
+                    while (BS == null) {
+                    }
+
+                    while (!BS.isConnected()) {
+                    }
+
+
+                    switch (Mode) {
+                        case SET_PASSWORD:
+                            intent.setClass(PasswordActivity.this, PasswordActivity.class);
+                            intent.putExtra("checkedPassword", password.toString());
+                            intent.setAction("check");
+                            startActivity(intent);
+                            finish();
+                            break;
+                        case CHECK_PASSWORD:
+
+                            if (checkedPassword.equals(password.toString())) {
+
+                                try {
+                                    Message msg = new Message();
+                                    msg.what = 2;
+                                    MainService.mainService.sendData("setpwd:" + checkedPassword + ":", msg);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(PasswordActivity.this, "藍牙設定密碼傳送錯誤", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                }
+                            } else {
+                                intent.setClass(PasswordActivity.this, PasswordActivity.class);
+                                intent.setAction("setpwd");
+                                Toast.makeText(PasswordActivity.this, password + "密碼錯誤" + checkedPassword, Toast.LENGTH_SHORT).show();
+                                startActivity(intent);
+                                finish();
+                            }
+                            break;
+
+                        case INPUT_PASSWORD:
 //blueconnect
-                    intent.setClass(PasswordActivity.this, PasswordActivity.class);
-                    intent.setAction("change");
-                    startActivity(intent);
-                    finish();
-                    break;
-                case CHANGE_PASSWORD:
+                            Message msg = new Message();
+                            msg.what = 2;
+                            try {
+                                MainService.mainService.sendData("chkpwd:" + checkedPassword + ":", msg);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+/*
+                            intent.setClass(PasswordActivity.this, PasswordActivity.class);
+                            intent.setAction("change");
+                            startActivity(intent);
+                            finish();
+*/
+                            break;
 
-                    intent.setClass(PasswordActivity.this, PasswordActivity.class);
-                    intent.putExtra("checkedPassword", password.toString());
-                    intent.setAction("check_change");
-                    startActivity(intent);
-                    finish();
+
+                        case CHANGE_PASSWORD:
+
+                            intent.setClass(PasswordActivity.this, PasswordActivity.class);
+                            intent.putExtra("checkedPassword", password.toString());
+                            intent.setAction("check_change");
+                            startActivity(intent);
+                            finish();
 
 
-                    break;
-                case CHECK_CHANGE_PASSWORD:
-                    if (checkedPassword.equals(password.toString())) {
+                            break;
+                        case CHECK_CHANGE_PASSWORD:
+                            if (checkedPassword.equals(password.toString())) {
 //bluetooth
-                        finish();
-                    } else {
-                        intent.setClass(PasswordActivity.this, PasswordActivity.class);
-                        intent.setAction("change");
-                        Toast.makeText(PasswordActivity.this, password + "設定密碼錯誤" + checkedPassword, Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
-                        finish();
+                                finish();
+                            } else {
+                                intent.setClass(PasswordActivity.this, PasswordActivity.class);
+                                intent.setAction("change");
+                                Toast.makeText(PasswordActivity.this, password + "設定密碼錯誤" + checkedPassword, Toast.LENGTH_SHORT).show();
+                                startActivity(intent);
+                                finish();
+
+                            }
+                            break;
+
 
                     }
-                    break;
 
 
-            }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+                    progressDialog.dismiss();
+
+                }
+
+            }.execute();
+
+
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+
+
+        if (resultCode == 2)
+
+        {
+            if (!BA.isEnabled()) {
+
+                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(mIntentOpenBT, 2);
+            }
+
+
+
+        }
+    }
 }
 
 
