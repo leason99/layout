@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -79,18 +81,21 @@ public class MainService extends Service {
 
                 switch (msg.what) {
                     case 1:
-                        Intent intent = new Intent();
-                        intent.setClass(connectActivity, PasswordActivity.class);
-                        intent.setAction("setpwd");
-                        connectActivity.startActivity(intent);
-                        connectActivity.finish();
+                        if(connectActivity!=null) {
+                            Intent intent = new Intent();
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                            intent.setClass(mainService, PasswordActivity.class);
+                            intent.setAction("setpwd");
+                            startActivity(intent);
+                        }// connectActivity.finish();
                         break;
                     case 2:
                         try {
 
-                                Message msg2 = new Message();
-                                msg2.what = 3;
-                                receiveData(msg2);
+                            Message msg2 = new Message();
+                            msg2.what = 3;
+                            receiveData(msg2);
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -102,9 +107,10 @@ public class MainService extends Service {
                         if (String.valueOf(receiveDate).equals("finished")) {
 
                             Intent mainIntent = new Intent();
+                            mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mainIntent.setClass(MainService.this, MainActivity.class);
                             startActivity(mainIntent);
-                            connectActivity.finish();
+                            //connectActivity.finish();
                             getSharedPreferences("set", 0)
                                     .edit()
                                     .putBoolean("isFinished", true)
@@ -112,12 +118,14 @@ public class MainService extends Service {
 
                         } else if (String.valueOf(receiveDate).equals("correct")) {
                             Intent mainIntent = new Intent();
+                            mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mainIntent.setClass(MainService.this, PasswordActivity.class);
                             mainIntent.setAction("change");
                             startActivity(mainIntent);
 
                         } else if (String.valueOf(receiveDate).equals("error")) {
                             Intent mainIntent = new Intent();
+                            mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mainIntent.setClass(MainService.this, PasswordActivity.class);
                             mainIntent.setAction("input");
                             startActivity(mainIntent);
@@ -133,8 +141,21 @@ public class MainService extends Service {
 
                         break;
 
-
                     case 4:
+
+
+                        try {
+
+                            Message msg4 = new Message();
+                            msg4.what = 5;
+                            receiveData(msg4);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
+                    case 5:
 
 
                         JSONArray jsonArray = null;
@@ -142,6 +163,7 @@ public class MainService extends Service {
                             jsonArray = new JSONArray(receiveDate);
                             if (jsonArray != null) {
                                 Message message = new Message();
+                                message.what=1;
                                 Bundle bundle = new Bundle();
 
 
@@ -181,17 +203,37 @@ public class MainService extends Service {
                 if (action.equals(BluetoothDevice.ACTION_FOUND)) {
 
                     BluetoothDevice Bdevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                    if (Bdevice.getName().equals(DeviceName)) {
+try{
+                    if (Bdevice.getName().equals("HC-06")) {
 
                         try {
 
                             BS = Bdevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+
+                            //
+                            Class<?> clazz = BS.getRemoteDevice().getClass();
+                            Class<?>[] paramTypes = new Class<?>[] {Integer.TYPE};
+
+                            Method m = clazz.getMethod("createRfcommSocket", paramTypes);
+                            Object[] params = new Object[] {Integer.valueOf(1)};
+
+                            BS = (BluetoothSocket) m.invoke(BS.getRemoteDevice(), params);
+                            //
+
                             new ConnectThread(BS, BA).run();
 
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
                         } catch (IOException e) {
+                            e.printStackTrace();
                         }
 
+
+                    }}catch (NullPointerException e){
 
                     }
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -324,7 +366,7 @@ public class MainService extends Service {
                     //     outputStream.write(output.toByteArray());
                     outputStream.write(data.getBytes());
                     outputStream.flush();
-
+                    Log.i("send", data);
                     handler.sendMessage(msg);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -343,29 +385,39 @@ public class MainService extends Service {
             @Override
             public void run() {
                 byte[] buffer = new byte[50];
-
+                Boolean isjsonend=true;
                 try {
                     receiveDate = "";
                     InputStream inputStream = BS.getInputStream();
                     String temp_msg;
-                    while (inputStream.available() <= 0) {
-
+                    while (inputStream.available() <=5) {};
+                    while (inputStream.available() > 0|| !isjsonend) {
 
                         //  while (true){
                         // Read from the InputStream
                         int byte_num = inputStream.read(buffer);
                         temp_msg = new String(buffer, 0, byte_num);
                         receiveDate += temp_msg;
+
+                        if(receiveDate.contains("[")){
+                            isjsonend=false;
+
+                            if(receiveDate.contains("]")){
+                                isjsonend=true;
+                            }
+
+                        }
                         //if(inputStream.available()==0)break;
                         //  }
-
+                    }
 
                         //  ByteArrayInputStream input = new ByteArrayInputStream(buffer);
                         // input.read();
+                        Message tmpMsg = new Message();
+                        tmpMsg.what=msg.what;
+                        handler.sendMessage(tmpMsg);
 
-                        handler.sendMessage(msg);
-                    }
-
+                    Log.i("recrive", receiveDate);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

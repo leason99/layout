@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
                     while (!BS.isConnected());
                     Message message = new Message();
-                    message.what = 100;//do notthing ,just match the function
+                    message.what = 4;//do notthing ,just match the function
 
                     try {
                         mainService.sendData("update", message);

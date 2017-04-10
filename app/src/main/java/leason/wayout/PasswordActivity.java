@@ -81,26 +81,16 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
         password = new StringBuilder();
 
 
-
-        if(BA==null){
-             mainService.Bluetoothconnect();
+        if (BA == null) {
+            mainService.Bluetoothconnect();
         }
 
-            if (!BA.isEnabled()) {
+        if (!BA.isEnabled()) {
 //
 //待寫dialog 警告
-                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(mIntentOpenBT, 2);
-            }
-
-
-
-
-
-
-
-
-
+            Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(mIntentOpenBT, 2);
+        }
 
 
     }
@@ -166,7 +156,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
 
-                    if(KeyEvent.KEYCODE_BACK== keyCode){
+                    if (KeyEvent.KEYCODE_BACK == keyCode) {
 
                         progressDialog.dismiss();
                         finish();
@@ -184,11 +174,10 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 protected void onPreExecute() {
                     super.onPreExecute();
                     progressDialog.show();
-                    if (BS == null ) {
+                    if (BS == null) {
                         MainService.mainService.Bluetoothconnect();
 
-                    }
-                    else if( !BS.isConnected()){
+                    } else if (!BS.isConnected()) {
                         MainService.mainService.Bluetoothconnect();
 
                     }
@@ -243,7 +232,7 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                             Message msg = new Message();
                             msg.what = 2;
                             try {
-                                MainService.mainService.sendData("chkpwd:" + checkedPassword + ":", msg);
+                                MainService.mainService.sendData("chkpwd:" + password + ":", msg);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -264,11 +253,17 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                             startActivity(intent);
                             finish();
 
-
                             break;
                         case CHECK_CHANGE_PASSWORD:
                             if (checkedPassword.equals(password.toString())) {
-//bluetooth
+//bluetooth Message msg = new Message();
+                                Message msg_change = new Message();
+                                msg_change.what = 2;
+                                try {
+                                    MainService.mainService.sendData("setpwd:" + checkedPassword + ":", msg_change);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 finish();
                             } else {
                                 intent.setClass(PasswordActivity.this, PasswordActivity.class);
@@ -305,7 +300,6 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
         super.onActivityResult(requestCode, resultCode, data);
 
 
-
         if (resultCode == 2)
 
         {
@@ -314,7 +308,6 @@ public class PasswordActivity extends AppCompatActivity implements View.OnClickL
                 Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(mIntentOpenBT, 2);
             }
-
 
 
         }

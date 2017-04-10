@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static leason.wayout.MainService.BA;
+import static leason.wayout.MainService.BS;
 
 
 public class ConnectActivity extends AppCompatActivity {
@@ -32,12 +33,13 @@ public class ConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
-        if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+        if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             // 發出一個intent去開啟藍芽，
             Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(mIntentOpenBT, 1);
 
-        } else {
+        }
+        else {
             MainService.mainService.Bluetoothconnect();
         }
         connectActivity = this;

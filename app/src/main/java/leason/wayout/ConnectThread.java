@@ -25,8 +25,10 @@ class ConnectThread extends Thread {
 
         mmAdapter.cancelDiscovery();
         try {
-            mmSocket.connect();
-           // ManageConnectThread manageConnectThread = new ManageConnectThread();
+           if(!mmSocket.isConnected()) {
+               mmSocket.connect();
+           }
+               // ManageConnectThread manageConnectThread = new ManageConnectThread();
           //  ManageConnectThread.sendData(mmSocket, 97);
             Message msg=new Message();
             msg.what=1;
