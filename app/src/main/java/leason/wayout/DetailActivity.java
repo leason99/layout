@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,6 +39,60 @@ public class DetailActivity extends AppCompatActivity {
         Num = String.valueOf(Integer.valueOf(getIntent().getAction()) - 1);
         textView = (MyTextView) findViewById(R.id.bag_num);
         textView.setText(Num);
+
+
+    }
+
+    public void setDate(View v) {
+
+        BagItem bagItem = null;
+        switch (v.getId()) {
+            case R.id.food:
+                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.food, new Date());
+                break;
+            case R.id.water:
+                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.water, new Date());
+                break;
+            case R.id.battery:
+                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.battery, new Date());
+
+                break;
+            case R.id.bag:
+                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.bag, new Date());
+
+                break;
+        }
+
+
+        MyDialog alertDialog = null;
+        try {
+            alertDialog = new MyDialog(this, bagItem);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        alertDialog.show();
+
+
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            setResult(1);
+            finish();
+            return true;
+        } else {
+
+            return super.onKeyDown(keyCode, event);
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
 
         for (int i = 0; i < itemId.length; i++) {
@@ -88,62 +143,54 @@ public class DetailActivity extends AppCompatActivity {
             }
 
 
+        }
+    }
+    public void updata(){
 
-        /*
+
+        MainService.mainService.checkDate();
+
         for (int i = 0; i < itemId.length; i++) {
-            RelativeLayout view= (RelativeLayout) findViewById(itemId[i]);
-            InputStream is = this.getResources().openRawResource(itemPicId[i]);
-            BitmapFactory.Options options=new BitmapFactory.Options();
-            options.inJustDecodeBounds = false;
-            options.inSampleSize = 2; //width，hight設為原來的十分一
-            Bitmap btp =BitmapFactory.decodeStream(is,null,options);
-            view.setBackground( new BitmapDrawable(btp));
 
-        }*/
-        }
-    }
-
-    public void setDate(View v) {
-
-        BagItem bagItem = null;
-        switch (v.getId()) {
-            case R.id.food:
-                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.food, new Date());
-                break;
-            case R.id.water:
-                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.water, new Date());
-                break;
-            case R.id.battery:
-                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.battery, new Date());
-
-                break;
-            case R.id.bag:
-                bagItem = new BagItem(Integer.valueOf(Num), BagItem.Type.bag, new Date());
-
-                break;
-        }
+            Boolean status = getSharedPreferences("icon" + String.valueOf(Num), Context.MODE_PRIVATE)
+                    .getBoolean(BagItem.Type.values()[i].toString(), false);
+            View view = (RelativeLayout) findViewById(itemId[i]);
+            if (status) {
+                final int finalI = i;
+                view.setBackgroundResource(itemPicIdOverdue[finalI]);
 
 
-        Calendar calendar = Calendar.getInstance();
 
-        MyDialog alertDialog = new MyDialog(this, bagItem);
-        alertDialog.show();
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
 
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            v.setBackgroundResource(itemPicIdOverdue[finalI]);
+                        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            v.setBackgroundResource(itemPicIdOverduePress[finalI]);
+                        }
+                        return false;
+                    }
+                });
+            } else {
 
-    }
+                final int finalI = i;
+                view.setBackgroundResource(itemPicId[finalI]);
 
+                view.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            setResult(1);
-            finish();
-            return true;
-        } else {
-
-            return super.onKeyDown(keyCode, event);
-        }
+                        if (event.getAction() == MotionEvent.ACTION_UP) {
+                            v.setBackgroundResource(itemPicId[finalI]);
+                        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            v.setBackgroundResource(itemPicIdPress[finalI]);
+                        }
+                        return false;
+                    }
+                });
+            }}
 
     }
 }

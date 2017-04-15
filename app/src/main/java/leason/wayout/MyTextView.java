@@ -34,7 +34,7 @@ public class MyTextView extends TextView {
 
     }
     public void init(){
-        Typeface tf= Typeface.createFromAsset(getContext().getAssets(),"fonts/MicrosoftJhengHeiUIRegular.ttf");
+        Typeface tf=FontCache.getTypeface("fonts/MicrosoftJhengHeiUIRegular.ttf",getContext());
         this.setTypeface(tf);
         this.setTextColor(getResources().getColor(R.color.colorText));
         this.setTextSize(14);

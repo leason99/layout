@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 
     <application
@@ -14,22 +14,30 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/NoTitle">
-        <activity android:name=".StartActivity">
+
+        <activity
+            android:name=".StartActivity"
+            android:theme="@style/SplashTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ConnectActivity" />
-        <activity android:name=".PasswordActivity" />
-        <activity android:name=".MainActivity"
+        <activity android:name=".ConnectActivity"
+            android:theme="@style/connectTheme"/>
+        <activity android:name=".PasswordActivity"
+            android:theme="@style/passwordTheme" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true"
+            android:theme="@style/mainTheme" />
+        <activity
+            android:name=".DetailActivity"
+            android:theme="@style/detailTheme" />
 
-            />
-        <activity android:name=".DetailActivity"></activity>
-        <service android:name=".MainService"
-            ></service>
+        <service android:name=".MainService" />
     </application>
 
 </manifest>

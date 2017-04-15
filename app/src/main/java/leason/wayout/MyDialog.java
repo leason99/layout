@@ -4,13 +4,16 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -37,7 +40,8 @@ public class MyDialog extends Dialog {
     Date nowDate, selectedDate;
     BagItem bagItem;
     ImageButton certainButton ,cancleButton;
-    public MyDialog(Context mcontext, BagItem mbagItem) {
+    TextView view;
+    public MyDialog(Context mcontext, BagItem mbagItem) throws ParseException {
         super(mcontext);
         this.bagItem = mbagItem;
         this.context = mcontext;
@@ -46,6 +50,7 @@ public class MyDialog extends Dialog {
         View v = getWindow().getDecorView();
         certainButton= (ImageButton) findViewById(R.id.certain);
         cancleButton= (ImageButton) findViewById(R.id.cancleButton);
+
         certainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,7 +61,7 @@ public class MyDialog extends Dialog {
                         .commit();
 
 
-                TextView view = null;
+                 view = null;
                 switch (bagItem.getType()) {
 
                     case food:
@@ -73,6 +78,8 @@ public class MyDialog extends Dialog {
                         break;
                 }
                 view.setText(dateString);
+                DetailActivity.instanceDetailActivity.updata();
+
                 MyDialog.this.dismiss();
 
 
@@ -108,10 +115,28 @@ public class MyDialog extends Dialog {
                 long day = difference / (3600 * 24 * 1000);
                 remianDay.setText(String.format("距離到期日還有 %s 日", String.valueOf(day)));
 
+
+
+
+
+
+
+
+
+
+
             }
         };
-        datePicker.init(nowDate.getYear(), nowDate.getMonth(), nowDate.getDay(), dateChangedListener);
+        if(view.getText().equals("")) {
+            datePicker.init(nowDate.getYear(), nowDate.getMonth(), nowDate.getDay(), dateChangedListener);
+        }else{
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date setDate=sdf.parse(String.valueOf(view.getText()));
 
+            datePicker.init(setDate.getYear(), setDate.getMonth(), setDate.getDay(), dateChangedListener);
+
+
+        }
         String[] typeString = context.getResources().getStringArray(R.array.dialog_item_string);
         title = (TextView) findViewById(R.id.dialog_title);
         this.type = bagItem.getType();

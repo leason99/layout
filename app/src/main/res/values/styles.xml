@@ -16,7 +16,22 @@
     <item name="android:activityCloseExitAnimation">@android:anim/slide_out_right</item>
 
 </style>
+    <style name="SplashTheme" parent="NoTitle">
+        <item name="android:windowBackground">@drawable/start</item>
+    </style>
 
+    <style name="mainTheme" parent="NoTitle">
+        <item name="android:windowBackground">@drawable/main</item>
+    </style>
+    <style name="detailTheme" parent="NoTitle">
+        <item name="android:windowBackground">@drawable/base_background</item>
+    </style>
+    <style name="passwordTheme" parent="NoTitle">
+        <item name="android:windowBackground">@drawable/background</item>
+    </style>
+    <style name="connectTheme" parent="NoTitle">
+        <item name="android:windowBackground">@drawable/bluetooth_connect</item>
+    </style>
 
     <style name="mydatepick" >
 

@@ -12,6 +12,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
@@ -128,6 +130,7 @@ public class MainService extends Service {
                             mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             mainIntent.setClass(MainService.this, PasswordActivity.class);
                             mainIntent.setAction("input");
+                            mainIntent.putExtra("error",true);
                             startActivity(mainIntent);
 
                         } else {
@@ -203,37 +206,38 @@ public class MainService extends Service {
                 if (action.equals(BluetoothDevice.ACTION_FOUND)) {
 
                     BluetoothDevice Bdevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-try{
-                    if (Bdevice.getName().equals("HC-06")) {
+                    try{
+                        if (Bdevice.getName().equals("HC-06")) {
 
-                        try {
+                            try {
 
-                            BS = Bdevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-
-                            //
-                            Class<?> clazz = BS.getRemoteDevice().getClass();
+                                // BS = Bdevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                                BS=Bdevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                                //
+                         /*   Class<?> clazz = BS.getRemoteDevice().getClass();
                             Class<?>[] paramTypes = new Class<?>[] {Integer.TYPE};
 
                             Method m = clazz.getMethod("createRfcommSocket", paramTypes);
                             Object[] params = new Object[] {Integer.valueOf(1)};
 
                             BS = (BluetoothSocket) m.invoke(BS.getRemoteDevice(), params);
-                            //
+                           */
+                                //
 
-                            new ConnectThread(BS, BA).run();
-
+                                new ConnectThread(BS, BA).run();
+/*
                         } catch (NoSuchMethodException e) {
                             e.printStackTrace();
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                            e.printStackTrace();*/
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
 
-                    }}catch (NullPointerException e){
+                        }}catch (NullPointerException e){
 
                     }
                 } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
@@ -263,7 +267,7 @@ try{
                 checkDate();
 
             }
-        }, 0, 10000);
+        }, 0, 1000*120);
 
 
     }
@@ -297,19 +301,37 @@ try{
                     long day = difference / (3600 * 24 * 1000);
 
                     if (day < 3) {
-
+                        String ContentText;
                         Intent intent = new Intent();
                         intent.setClass(mainService, MainActivity.class);
                         PendingIntent pendingIntent = PendingIntent.getActivity(mainService, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+                        if (day < 0) {
+                            ContentText = "急救包" + bagNum + " 的" + itemName[itemNum] + "已經過期 " + Math.abs((int)day) + "天";
+
+
+                        }
+
+                        if (day == 0) {
+                            ContentText = "急救包" + bagNum + " 的" + itemName[itemNum] + "今天過期";
+
+
+                        }
+                        else {
+                            ContentText= "急救包" + bagNum + " 的" + itemName[itemNum] + "再過 " + (int)day + "天即將到期";
+
+
+                        }
                         notification = new Notification.Builder(mainService)
                                 .setTicker("Ticker")
                                 .setAutoCancel(false)
                                 .setContentInfo("info")
+                                //.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.logo))
                                 .setSmallIcon(R.drawable.logo)
                                 .setContentIntent(pendingIntent)
                                 .setContentTitle("The Way Out")
-                                .setContentText(itemName[itemNum] + " 即將到期:" + bagNum * 10 + itemNum)
+                                .setContentText(ContentText)
+                                .setAutoCancel(false).
                                 .build();
                         notificationManager.notify(bagNum * 10 + itemNum, notification);
 
@@ -317,10 +339,9 @@ try{
                                 .putBoolean(BagItem.Type.values()[itemNum].toString(), true).commit();
 
                     } else {
-                        notificationManager.cancel(bagNum * 10 + itemNum);
                         getSharedPreferences("icon" + String.valueOf(bagNum), Context.MODE_PRIVATE).edit()
                                 .putBoolean(BagItem.Type.values()[itemNum].toString(), false).commit();
-
+                        notificationManager.cancel(bagNum * 10 + itemNum);
                     }
                 }
 
@@ -390,7 +411,7 @@ try{
                     receiveDate = "";
                     InputStream inputStream = BS.getInputStream();
                     String temp_msg;
-                    while (inputStream.available() <=5) {};
+                    while (inputStream.available() <4) {};
                     while (inputStream.available() > 0|| !isjsonend) {
 
                         //  while (true){
@@ -411,11 +432,11 @@ try{
                         //  }
                     }
 
-                        //  ByteArrayInputStream input = new ByteArrayInputStream(buffer);
-                        // input.read();
-                        Message tmpMsg = new Message();
-                        tmpMsg.what=msg.what;
-                        handler.sendMessage(tmpMsg);
+                    //  ByteArrayInputStream input = new ByteArrayInputStream(buffer);
+                    // input.read();
+                    Message tmpMsg = new Message();
+                    tmpMsg.what=msg.what;
+                    handler.sendMessage(tmpMsg);
 
                     Log.i("recrive", receiveDate);
                 } catch (IOException e) {

@@ -14,11 +14,10 @@ import java.util.TimerTask;
 public class StartActivity extends AppCompatActivity {
     Intent intent;
 
-    Boolean TESTMODE=false;
+    Boolean TESTMODE=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
         intent = new Intent();
 
 
@@ -37,16 +36,20 @@ public class StartActivity extends AppCompatActivity {
         Intent ServiceIntent=new Intent();
         ServiceIntent.setClass(this,MainService.class);
         startService(ServiceIntent);
-        Timer timer = new Timer();
+
+
+        final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                while(!MainService.isInstance());
-                startActivity(intent);
-                finish();
-            }
-        }, 1000);
+                if(MainService.isInstance()){
+                    startActivity(intent);
+                    timer.cancel();
 
+                    finish();
+                }
+            }
+        }, 0,1000);
 
     }
 }
