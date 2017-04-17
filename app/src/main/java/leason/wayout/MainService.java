@@ -326,12 +326,12 @@ public class MainService extends Service {
                                 .setTicker("Ticker")
                                 .setAutoCancel(false)
                                 .setContentInfo("info")
-                                //.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.logo))
+                                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.logo))
                                 .setSmallIcon(R.drawable.logo)
                                 .setContentIntent(pendingIntent)
                                 .setContentTitle("The Way Out")
                                 .setContentText(ContentText)
-                                .setAutoCancel(false).
+                                .setOngoing(true)
                                 .build();
                         notificationManager.notify(bagNum * 10 + itemNum, notification);
 

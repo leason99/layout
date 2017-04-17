@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.provider.ContactsContract;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -50,7 +52,21 @@ public class MyDialog extends Dialog {
         View v = getWindow().getDecorView();
         certainButton= (ImageButton) findViewById(R.id.certain);
         cancleButton= (ImageButton) findViewById(R.id.cancleButton);
+        switch (bagItem.getType()) {
 
+            case food:
+                view = (TextView) instanceDetailActivity.findViewById(R.id.food_date);
+                break;
+            case water:
+                view = (TextView) instanceDetailActivity.findViewById(R.id.water_date);
+                break;
+            case bag:
+                view = (TextView) instanceDetailActivity.findViewById(R.id.bag_date);
+                break;
+            case battery:
+                view = (TextView) instanceDetailActivity.findViewById(R.id.battery_date);
+                break;
+        }
         certainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,22 +77,7 @@ public class MyDialog extends Dialog {
                         .commit();
 
 
-                 view = null;
-                switch (bagItem.getType()) {
 
-                    case food:
-                        view = (TextView) instanceDetailActivity.findViewById(R.id.food_date);
-                        break;
-                    case water:
-                        view = (TextView) instanceDetailActivity.findViewById(R.id.water_date);
-                        break;
-                    case bag:
-                        view = (TextView) instanceDetailActivity.findViewById(R.id.bag_date);
-                        break;
-                    case battery:
-                        view = (TextView) instanceDetailActivity.findViewById(R.id.battery_date);
-                        break;
-                }
                 view.setText(dateString);
                 DetailActivity.instanceDetailActivity.updata();
 
@@ -131,9 +132,14 @@ public class MyDialog extends Dialog {
             datePicker.init(nowDate.getYear(), nowDate.getMonth(), nowDate.getDay(), dateChangedListener);
         }else{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            Date setDate=sdf.parse(String.valueOf(view.getText()));
+            Date setdate=sdf.parse(String.valueOf(view.getText()));
 
-            datePicker.init(setDate.getYear(), setDate.getMonth(), setDate.getDay(), dateChangedListener);
+
+           // DateFormat df =DateFormat.getDateInstance();
+            //String string= (String) view.getText();
+            //string=string.replace("/","-");
+           // Date setdate=df.parse(string);
+            datePicker.init(setdate.getYear()+1900, setdate.getMonth(),setdate.getDate(), dateChangedListener);
 
 
         }
