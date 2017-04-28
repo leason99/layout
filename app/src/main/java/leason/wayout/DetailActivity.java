@@ -3,6 +3,7 @@ package leason.wayout;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity {
-    String Num;
+    int Num;
     MyTextView textView;
     int itemId[] = {R.id.food, R.id.water, R.id.battery, R.id.bag};
     int itemPicId[] = {R.drawable.food_item, R.drawable.water_item, R.drawable.battery_item, R.drawable.bag_item};
@@ -28,7 +29,7 @@ public class DetailActivity extends AppCompatActivity {
     int itemPicIdOverdue[] = {R.drawable.food_item_overdue, R.drawable.water_item_overdue, R.drawable.battery_item_overdue, R.drawable.bag_item_overdue};
     int itemPicIdOverduePress[] = {R.drawable.food_item_overdue_press, R.drawable.water_item_overdue_press, R.drawable.battery_item_overdue_press, R.drawable.bag_item_overdue_press};
     final int[] dateId = {R.id.food_date, R.id.water_date, R.id.battery_date, R.id.bag_date};
-    final int[] Id = {R.id.food, R.id.water, R.id.battery, R.id.bag};
+    final int[] overdueId = {R.id.food_overdue, R.id.water_overdue, R.id.battery_overdue, R.id.bag_overdue};
     static DetailActivity instanceDetailActivity;
 
     @Override
@@ -36,9 +37,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         instanceDetailActivity = this;
-        Num = String.valueOf(Integer.valueOf(getIntent().getAction()) - 1);
+        Num = Integer.valueOf(getIntent().getAction()) - 1;
         textView = (MyTextView) findViewById(R.id.bag_num);
-        textView.setText(Num);
+        textView.setText(String.valueOf(Num+1));
 
 
     }
@@ -102,6 +103,8 @@ public class DetailActivity extends AppCompatActivity {
                     .getString("date" + BagItem.Type.values()[i].toString(), "");
             Boolean status = getSharedPreferences("icon" + String.valueOf(Num), Context.MODE_PRIVATE)
                     .getBoolean(BagItem.Type.values()[i].toString(), false);
+            Boolean isoverdue= getSharedPreferences("overdue" + String.valueOf(String.valueOf(Num)), Context.MODE_PRIVATE)
+                    .getBoolean(BagItem.Type.values()[i].toString(), false);
             textView.setText(dateText);
 
 
@@ -123,6 +126,8 @@ public class DetailActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+                textView.setTextColor(getResources().getColor(R.color.orange_overdue));
+
             } else {
 
                 final int finalI = i;
@@ -140,6 +145,17 @@ public class DetailActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+                textView.setTextColor(Color.WHITE);
+
+            }
+
+
+
+            if(isoverdue) {
+                findViewById(overdueId[i]).setVisibility(View.VISIBLE);
+            }else{
+
+                findViewById(overdueId[i]).setVisibility(View.INVISIBLE);
             }
 
 
@@ -154,7 +170,11 @@ public class DetailActivity extends AppCompatActivity {
 
             Boolean status = getSharedPreferences("icon" + String.valueOf(Num), Context.MODE_PRIVATE)
                     .getBoolean(BagItem.Type.values()[i].toString(), false);
+            Boolean isoverdue= getSharedPreferences("overdue" + String.valueOf(String.valueOf(Num)), Context.MODE_PRIVATE)
+                    .getBoolean(BagItem.Type.values()[i].toString(), false);
             View view = (RelativeLayout) findViewById(itemId[i]);
+            MyTextView textView= (MyTextView) findViewById(dateId[i]);
+
             if (status) {
                 final int finalI = i;
                 view.setBackgroundResource(itemPicIdOverdue[finalI]);
@@ -173,6 +193,8 @@ public class DetailActivity extends AppCompatActivity {
                         return false;
                     }
                 });
+                textView.setTextColor(getResources().getColor(R.color.orange_overdue));
+
             } else {
 
                 final int finalI = i;
@@ -190,7 +212,21 @@ public class DetailActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-            }}
+                textView.setTextColor(Color.WHITE);
+
+            }
+
+            if(isoverdue) {
+                findViewById(overdueId[i]).setVisibility(View.VISIBLE);
+            }else{
+
+                findViewById(overdueId[i]).setVisibility(View.INVISIBLE);
+            }
+
+
+
+
+        }
 
     }
 }

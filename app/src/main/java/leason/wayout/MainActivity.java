@@ -2,27 +2,36 @@ package leason.wayout;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.BoolRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
+
+import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
-import java.util.logging.LogRecord;
 
-import static leason.wayout.MainService.BA;
-import static leason.wayout.MainService.BS;
-import static leason.wayout.MainService.mainService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import io.palaima.smoothbluetooth.Device;
+import io.palaima.smoothbluetooth.SmoothBluetooth;
+
+import static leason.wayout.MyApplication.ispaired;
+import static leason.wayout.MyApplication.mSmoothBluetooth;
+
 
 public class MainActivity extends AppCompatActivity {
     final int[][] itemId = {{R.id.food1, R.id.water1, R.id.battery1, R.id.bag1},
@@ -32,12 +41,151 @@ public class MainActivity extends AppCompatActivity {
     static MainActivity mainActivity = null;
     Handler handler;
     int chargeId[] = {R.id.charge1, R.id.charge2, R.id.charge3, R.id.charge4};
+    private List<Integer> mBuffer;
+    ProgressDialog progressDialog;
+    StringBuilder sb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//check overdue
+        mBuffer=new ArrayList<>();
+
+        mSmoothBluetooth.setListener(new SmoothBluetooth.Listener() {
+            @Override
+            public void onBluetoothNotSupported() {
+
+            }
+
+            @Override
+            public void onBluetoothNotEnabled() {
+                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(mIntentOpenBT, 2);
+            }
+
+            @Override
+            public void onConnecting(Device device) {
+
+            }
+
+            @Override
+            public void onConnected(Device device) {
+                SyncChargeData(null);
+            }
+
+            @Override
+            public void onDisconnected() {
+
+/*
+
+                Set<BluetoothDevice> pairedDevices = BluetoothAdapter.getDefaultAdapter().getBondedDevices();
+                Boolean ispaired=false;
+                if (pairedDevices.size() > 0) {
+                    for (BluetoothDevice device : pairedDevices) {
+                        if(device.getName().equals("HC-06")){
+                            ispaired=true;
+                        }
+                    }
+                }
+                if(ispaired) {
+                    mSmoothBluetooth.tryConnection();
+                }else{
+                    mSmoothBluetooth.doDiscovery();
+                }*/
+            }
+
+            @Override
+            public void onConnectionFailed(Device device) {
+                if(mSmoothBluetooth.isDiscovery()){
+                    mSmoothBluetooth.cancelDiscovery();}
+                if(ispaired) {
+                    mSmoothBluetooth.tryConnection();
+                }else{
+                    mSmoothBluetooth.doDiscovery();
+                }
+            }
+
+            @Override
+            public void onDiscoveryStarted() {
+
+            }
+
+            @Override
+            public void onDiscoveryFinished() {
+
+            }
+
+            @Override
+            public void onNoDevicesFound() {
+
+            }
+            @Override
+            public void onDevicesFound(List<Device> deviceList, SmoothBluetooth.ConnectionCallback connectionCallback) {
+                for (Device device:deviceList) {
+                    Log.i("onDevicesFound",device.getName());
+                    if(device.getName().equals("HC-06")){
+                        connectionCallback.connectTo(device);
+                    }
+
+
+                }}
+
+            @Override
+            public void onDataReceived(int data) {
+                mBuffer.add(data);
+
+                if ((char)data==']') { StringBuilder  sb = new StringBuilder();
+                    for (int integer : mBuffer) {
+
+
+                        sb.append((char) integer);
+                    }
+                    mBuffer.clear();
+
+
+                    JSONArray jsonArray = null;
+                    try {
+                        jsonArray = new JSONArray(sb.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    if (jsonArray != null) {
+
+                        for (int i = 0; i < 4; i++) {
+
+                            Boolean ischargeed = null;
+                            try {
+                                ischargeed = (Boolean) jsonArray.get(i);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            ImageView imageView = (ImageView) MainActivity.mainActivity.findViewById(chargeId[i]);
+                            if (ischargeed) {
+
+
+                                imageView.setImageResource(R.drawable.charge);
+
+                            } else {
+
+                                imageView.setImageResource(R.drawable.no_charge);
+
+                            }
+                            getSharedPreferences("icon" + String.valueOf(i), Context.MODE_PRIVATE).edit().putBoolean("charge",ischargeed).commit();
+
+
+                        }
+                    }
+                    progressDialog.dismiss();
+
+                }
+
+
+
+            }
+
+
+        });
 
 
     }
@@ -55,8 +203,6 @@ public class MainActivity extends AppCompatActivity {
         intent.setClass(MainActivity.this, DetailActivity.class);
         intent.setAction("1");
         switch (v.getId()) {
-
-
             case R.id.bag1_btn:
                 intent.setAction("1");
                 break;
@@ -69,8 +215,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.bag4_btn:
                 intent.setAction("4");
                 break;
-
-
         }
         startActivityForResult(intent, 1);
 
@@ -128,16 +272,15 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultCode == 2)
 
         {
-                if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+            if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
 //
 //待寫dialog 警告
-                    Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(mIntentOpenBT, 2);
-                } else {
+                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(mIntentOpenBT, 2);
+            } else {
 
-                    SyncChargeData(null);
-                }
-
+                SyncChargeData(null);
+            }
 
 
         }
@@ -146,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        handler = new Handler() {
+       /* handler = new Handler() {
 
 
             @Override
@@ -155,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if (msg.what == 1) {
-
                     for (int i = 0; i < 4; i++) {
                         ImageView imageView = (ImageView) MainActivity.mainActivity.findViewById(chargeId[i]);
                         msg.getData().getBoolean(String.valueOf(i));
@@ -174,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        };
+        };*/
         mainActivity = this;
         for (int bagItem = 0; bagItem < 4; bagItem++) {
             for (int item = 0; item < 4; item++) {
@@ -215,7 +357,37 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+
+            Boolean status = getSharedPreferences("icon" + String.valueOf(bagItem), Context.MODE_PRIVATE)
+                    .getBoolean("charge", false);
+            ImageView imageView = (ImageView) MainActivity.mainActivity.findViewById(chargeId[bagItem]);
+            if (status) {
+
+                imageView.setImageResource(R.drawable.charge);
+
+            } else {
+
+                imageView.setImageResource(R.drawable.no_charge);
+
+            }
+
         }
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("等待藍牙連接");
+        progressDialog.setTitle("等待藍牙連接");
+        progressDialog.setCancelable(false);
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+                if (KeyEvent.KEYCODE_BACK == keyCode) {
+                    progressDialog.dismiss();
+                }
+
+                return false;
+            }
+        });
 
     }
 
@@ -229,62 +401,16 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(mIntentOpenBT, 2);
         } else {
 
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setMessage("等待藍牙連接");
-            progressDialog.setTitle("等待藍牙連接");
-            progressDialog.setCancelable(false);
-            progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-                @Override
-                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
-                    if(KeyEvent.KEYCODE_BACK==keyCode){
-                        progressDialog.dismiss();
-                    }
-
-                    return false;
-                }
-            });
-            new AsyncTask<Void, Void, Void>() {
-
-                @Override
-                protected void onPreExecute() {
-                    super.onPreExecute();
-
-                    if (BS == null) {
-                        MainService.mainService.Bluetoothconnect();
-                    }
-                    progressDialog.show();
-
-                }
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    while (BS == null);
-
-                    while (!BS.isConnected());
-                    Message message = new Message();
-                    message.what = 4;//do notthing ,just match the function
-
-                    try {
-                        mainService.sendData("update", message);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    super.onPostExecute(aVoid);
-                    progressDialog.dismiss();
-
-                }
-
-            }.execute();
 
 
+          if(!progressDialog.isShowing())  {progressDialog.show();}
+          if(!mSmoothBluetooth.isConnected())  {if(ispaired) {
+                mSmoothBluetooth.tryConnection();
+            }else{
+                mSmoothBluetooth.doDiscovery();
+            }}else {
+              MyApplication.mSmoothBluetooth.send("update");
+          }
         }
     }
 

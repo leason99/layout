@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorText">#E6E6E6</color>
+    <color name="orange_overdue">#F09268</color>
 </resources>

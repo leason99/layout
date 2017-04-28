@@ -113,7 +113,7 @@ public class MyDialog extends Dialog {
                 Calendar calendarselect = Calendar.getInstance();
                 calendarselect.set(year, monthOfYear, dayOfMonth);
                 long difference = calendarselect.getTimeInMillis() - calendar.getTimeInMillis();
-                long day = difference / (3600 * 24 * 1000);
+                int day =(int)Math.floor(difference / (3600 * 24 * 1000.00));
                 remianDay.setText(String.format("距離到期日還有 %s 日", String.valueOf(day)));
 
 
@@ -129,7 +129,7 @@ public class MyDialog extends Dialog {
             }
         };
         if(view.getText().equals("")) {
-            datePicker.init(nowDate.getYear(), nowDate.getMonth(), nowDate.getDay(), dateChangedListener);
+            datePicker.init(nowDate.getYear(), nowDate.getMonth(), nowDate.getDate(), dateChangedListener);
         }else{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             Date setdate=sdf.parse(String.valueOf(view.getText()));

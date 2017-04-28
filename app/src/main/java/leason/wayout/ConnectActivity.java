@@ -2,46 +2,114 @@ package leason.wayout;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+
 import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
-import android.os.Parcelable;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
-import static leason.wayout.MainService.BA;
-import static leason.wayout.MainService.BS;
+import io.palaima.smoothbluetooth.Device;
+import io.palaima.smoothbluetooth.SmoothBluetooth;
 
+import static leason.wayout.MyApplication.ispaired;
 
 public class ConnectActivity extends AppCompatActivity {
     static ConnectActivity connectActivity;
-    static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
-        if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            // 發出一個intent去開啟藍芽，
-            Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(mIntentOpenBT, 1);
+MyApplication.mSmoothBluetooth.setListener( new SmoothBluetooth.Listener() {
+            @Override
+            public void onBluetoothNotSupported() {
 
+            }
+
+            @Override
+            public void onBluetoothNotEnabled() {
+
+            }
+
+            @Override
+            public void onConnecting(Device device) {
+            }
+
+            @Override
+            public void onConnected(Device device) {
+                Intent intent = new Intent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setClass(ConnectActivity.this, PasswordActivity.class);
+                intent.setAction("setpwd");
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onDisconnected() {
+
+
+            }
+
+            @Override
+            public void onConnectionFailed(Device device) {
+                if(ispaired) {
+                   MyApplication.mSmoothBluetooth.tryConnection();
+                }else{
+                    MyApplication.mSmoothBluetooth.doDiscovery();
+                }
+            }
+
+            @Override
+            public void onDiscoveryStarted() {
+
+            }
+
+            @Override
+            public void onDiscoveryFinished() {
+
+            }
+
+            @Override
+            public void onNoDevicesFound() {
+
+            }
+
+            @Override
+            public void onDevicesFound(List<Device> deviceList, SmoothBluetooth.ConnectionCallback connectionCallback) {
+                for (Device device:deviceList) {
+                    Log.i("onDevicesFound",device.getName());
+                    if(device.getName().equals("HC-06")){
+                        connectionCallback.connectTo(device);
+
+                    }
+
+
+                }}
+
+            @Override
+            public void onDataReceived(int data) {
+
+
+            }
+        });
+
+
+
+        if(ispaired) {
+            MyApplication.mSmoothBluetooth.tryConnection();
+        }else{
+            MyApplication.mSmoothBluetooth.doDiscovery();
         }
-        else {
-            MainService.mainService.Bluetoothconnect();
-        }
+
         connectActivity = this;
 
     }
@@ -53,17 +121,23 @@ public class ConnectActivity extends AppCompatActivity {
 
 
         if (resultCode == 1) {
-            if (!BA.isEnabled()) {
-//
-//待寫dialog 警告
-              Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+                Intent mIntentOpenBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(mIntentOpenBT, 1);
-            } else {
-
-                MainService.mainService.Bluetoothconnect();
             }
+            if(ispaired) {
+                MyApplication.mSmoothBluetooth.tryConnection();
+            }else{
+                MyApplication.mSmoothBluetooth.doDiscovery();
+            }
+
         }
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
 }

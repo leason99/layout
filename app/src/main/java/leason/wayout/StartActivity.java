@@ -14,7 +14,7 @@ import java.util.TimerTask;
 public class StartActivity extends AppCompatActivity {
     Intent intent;
 
-    Boolean TESTMODE=true;
+    Boolean TESTMODE=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
